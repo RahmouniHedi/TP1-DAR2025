@@ -1,8 +1,7 @@
 package clientPackage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+
 import java.util.Scanner;
 
 public class client {
@@ -17,12 +16,17 @@ public class client {
 
             int nbr = sc.nextInt();
             OutputStream os = clientSocket.getOutputStream();
-            os.write(nbr);
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeInt(nbr);
             InputStream is = clientSocket.getInputStream();
-            int result = is.read();
+            DataInputStream dis = new DataInputStream(is);
+            int result = dis.readInt();
             System.out.println("Le multiple de " + nbr + " est = " + result);
             // La dernière étape : Fermer socket
             clientSocket.close();
+            sc.close();
+            dos.close();
+            dis.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

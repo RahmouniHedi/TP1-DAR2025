@@ -1,8 +1,7 @@
 package serverPackage;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,13 +19,17 @@ public class Server {
 
             System.out.println("un client est connecté");
             InputStream in = clientsocket.getInputStream();
-            int nbr = in.read();
+            DataInputStream dis = new DataInputStream(in);
+            int nbr = dis.readInt();
             int resp = nbr*5;
             OutputStream os = clientsocket.getOutputStream();
-            os.write(resp);
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeInt(resp);
 // La dernière étape : Fermer socket
         clientsocket.close();
-
+        serverSocket.close();
+        dis.close();
+        dos.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
