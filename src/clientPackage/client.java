@@ -1,34 +1,29 @@
 package clientPackage;
+
 import java.io.*;
-import java.net.Socket;
+import java.net.*;
 
-import java.util.Scanner;
 
-public class client {
-    public static void main(String[] args) throws IOException {
-        // La première étape :
-        try {
-            System.out.println("Je suis un client pas encore connecté...");
-            Socket clientSocket = new Socket("127.0.0.1", 1234);
-            System.out.println("je suis un client connecté");
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Entre un nombre :");
+public class Client {
 
-            int nbr = sc.nextInt();
-            OutputStream os = clientSocket.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeInt(nbr);
-            InputStream is = clientSocket.getInputStream();
-            DataInputStream dis = new DataInputStream(is);
-            int result = dis.readInt();
-            System.out.println("Le multiple de " + nbr + " est = " + result);
-            // La dernière étape : Fermer socket
-            clientSocket.close();
-            sc.close();
-            dos.close();
-            dis.close();
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("localhost", 1234)) {
+
+            System.out.println("je suis connecté");
+
+            OutputStream os = socket.getOutputStream();
+            os.write(10);
+            System.out.println("Envoyé le nombre 10 au serveur.");
+
+            InputStream is = socket.getInputStream();
+            int nb = is.read();
+
+            System.out.println("la multiple de 10 est " + nb);
+
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Erreur de connexion ou de communication avec le serveur : " + e.getMessage());
+            e.printStackTrace();
         }
-    } }
-
+    }
+}
