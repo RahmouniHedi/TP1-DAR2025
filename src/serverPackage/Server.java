@@ -1,37 +1,42 @@
 package serverPackage;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    static void main() throws IOException {
-        // La première étape :
-        ServerSocket serverSocket;
+    public static void main(String[] args) {
         try {
-            serverSocket = new ServerSocket(1234);
-            System.out.println("Je suis un serveur en attente la connexion d'un client ");
+            ServerSocket serverSocket = new ServerSocket(1234);
+            System.out.println("Serveur en attente de connexion...");
 
-            Socket clientsocket = serverSocket.accept();
-            // La deuxième étape :
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Un client est connecté.");
 
+            DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
 
-            System.out.println("un client est connecté");
-            InputStream in = clientsocket.getInputStream();
-            DataInputStream dis = new DataInputStream(in);
-            int nbr = dis.readInt();
-            int resp = nbr*5;
-            OutputStream os = clientsocket.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(os);
-            dos.writeInt(resp);
-// La dernière étape : Fermer socket
-        clientsocket.close();
-        serverSocket.close();
-        dis.close();
-        dos.close();
+            int nbr;
+
+            while (true) {
+                nbr = dis.readInt();
+                if (nbr == 0) {
+                    System.out.println("Le client a envoyé 0. Fermeture de la connexion.");
+                    break;
+                }
+
+                int resp = nbr * 5;
+                dos.writeInt(resp);
+                dos.flush();
+            }
+
+            dis.close();
+            dos.close();
+            clientSocket.close();
+            serverSocket.close();
+            System.out.println("Serveur arrêté.");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-    }}
+    }
+}
